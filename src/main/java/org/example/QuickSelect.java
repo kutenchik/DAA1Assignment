@@ -7,6 +7,10 @@ public class QuickSelect {
     private static final Random random = new Random();
 
     public static int select(int[] a, int k) {
+        return select(a, k, new Metrics());
+    }
+
+    public static int select(int[] a, int k, Metrics metrics) {
         if (a == null || a.length == 0) {
             throw new IllegalArgumentException("Array must not be empty");
         }
@@ -15,13 +19,15 @@ public class QuickSelect {
             throw new IllegalArgumentException("k is out of range");
         }
 
+        metrics.updateDepth(1);
+
         int left = 0;
         int right = a.length - 1;
 
         while (left <= right) {
             int pivot = a[random.nextInt(left, right + 1)];
 
-            int[] middle = partition(a, left, right, pivot);
+            int[] middle = partition(a, left, right, pivot, metrics);
 
             if (k < middle[0]) {
                 right = middle[0] - 1;
@@ -35,21 +41,27 @@ public class QuickSelect {
         throw new IllegalStateException();
     }
 
-    private static int[] partition(int[] a, int left, int right, int pivot) {
+    private static int[] partition(int[] a, int left, int right, int pivot, Metrics metrics) {
         int i = left;
         int lt = left;
         int gt = right;
 
         while (i <= gt) {
+            metrics.addComparison();
+
             if (a[i] < pivot) {
                 swap(a, i, lt);
                 i++;
                 lt++;
-            } else if (a[i] > pivot) {
-                swap(a, i, gt);
-                gt--;
             } else {
-                i++;
+                metrics.addComparison();
+
+                if (a[i] > pivot) {
+                    swap(a, i, gt);
+                    gt--;
+                } else {
+                    i++;
+                }
             }
         }
 
