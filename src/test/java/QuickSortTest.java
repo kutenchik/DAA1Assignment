@@ -1,3 +1,4 @@
+import org.example.Metrics;
 import org.example.QuickSort;
 import org.junit.jupiter.api.Test;
 
@@ -5,6 +6,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class QuickSortTest {
 
@@ -73,5 +75,23 @@ public class QuickSortTest {
 
             assertArrayEquals(expected, a);
         }
+    }
+
+    @Test
+    void testRecursionDepth() {
+        int n = 100000;
+        int[] a = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            a[i] = i;
+        }
+
+        Metrics metrics = new Metrics();
+
+        QuickSort.sort(a, metrics);
+
+        double limit = 2 * (Math.log(n) / Math.log(2));
+
+        assertTrue(metrics.getMaxDepth() <= limit);
     }
 }
